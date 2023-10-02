@@ -4,7 +4,6 @@
 // User Interactive Playground
 
 //Global Variables
-//let ballX, xSpeed = 20, 
 let ballSize = 50, ballX, ballIncrease = 1;
 let overlay;
 let circleDiameter;
@@ -30,7 +29,7 @@ function draw() {
   background(220);
   animateBall();
   letterShape();
-  fill(50);
+  fill(50); // text to display my name
   textSize(32);
   textFont("Georgia");
   text("Mason Lam", 50, 70);
@@ -38,16 +37,17 @@ function draw() {
 }
 
 function animateBall(){
-  // render the ball on the screen
+  // make the ball bigger and smaller
   ballSize = ballSize + ballIncrease;
   if (ballSize > 300 || ballSize < 2){
     ballIncrease *= -1;
   }
+  // put ball on screen
   fill(0);
   circle(ballX, windowHeight/2, ballSize);
 }
 
-function reset(){
+function reset(){ // resets everything in setup
   if (keyIsPressed){
     if(key===" "){
       setup();
