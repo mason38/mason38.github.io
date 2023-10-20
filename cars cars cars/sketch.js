@@ -4,17 +4,30 @@
 //
 
 let car;
+let eastbound = [];
+let westbound = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  car = new Vehicle(0, random(height/4, height/2+height/4));
+  for(let i = 0; i < 20; i++){
+    eastbound.push(new Vehicle(0, random(height/2, height/2+height/4)));
+    i++;
+  }
+  for(let i = 0; i< 20; i++){
+    westbound.push(new Vehicle(0, random(height/4, height/2+height/4)));
+    i++;
+  }
 }
 
 function draw() {
   background(220);
   drawRoad();
-  car.action();
-  
+  for(let num in eastbound){
+    eastbound[num].action();
+  }
+  for(let num in westbound){
+    westbound[num].action();
+  }
   
 }
 
