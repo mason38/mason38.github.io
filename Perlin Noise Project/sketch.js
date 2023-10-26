@@ -16,9 +16,8 @@ function setup() {
   generateTerrain(); // makes the terrain
 }
 
-function generateTerrain(){
+function generateTerrain(){ // displays the rectangles that look like the terrain
   let x = 0;
-  
   rectHeightTime = noiseShiftMove;
   highestY = height; // the highest y point is equal to the height of the canvas
   while(x<width){
@@ -48,7 +47,7 @@ function keyPressed(){ // when arrow key left or right is pressed, change rectan
   drawFlag(20, 20);
 }
 
-function draw(){
+function draw(){ //calls the functions every frame to look animated
   background(255);
   noiseShiftMove += 0.02;
   generateTerrain();
@@ -59,3 +58,4 @@ function drawFlag(x,y){ // draws the flag
   line(highestX, highestY, highestX, highestY - 30); 
   triangle(highestX, highestY - 20, highestX, highestY - 30, highestX + 15, highestY - 25); 
 }
+
