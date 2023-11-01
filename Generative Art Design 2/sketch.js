@@ -3,40 +3,32 @@
 // Oct. 31, 2023
 //
 
-let randWidth = random(0, width);
-let randHeight = random(0, height);
-let controlWidth = random(0, width);
-let controlHeight = random(0, height);
-let controlWidth2 = random(0, width);
-let controlHeight2 = random(0, height);
-let randWidth2 = random(0, width);
-let randHeight2 = random(0, height);
+let randWidth = Math.random(0, 2000);
+let randHeight = Math.random(0, 2000);
+let controlWidth = Math.random(0, 2000);
+let controlHeight = Math.random(0, 2000);
+let controlWidth2 = Math.random(0, 2000);
+let controlHeight2 = Math.random(0, 2000);
+let randWidth2 = Math.random(0, 2000);
+let randHeight2 = Math.random(0, 2000);
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-  noFill();
-  stroke(255, 102, 0);
-  curve(5, 26, 5, 26, 73, 24, 73, 61);
-  stroke(0);
-  curve(5, 26, 73, 24, 73, 61, 15, 65);
-  stroke(255, 102, 0);
-  curve(73, 24, 73, 61, 15, 65, 15, 65);
+  createCanvas(2000, 2000);
   drawCurves();
 }
 
 function drawCurves(){
-  strokeWeight(2);
-  stroke(0);
-  for(let i = 0; i < 100; i++){
-    //curve(controlWidth, controlHeight, randWidth, randHeight, randWidth2, randHeight2, controlWidth2, controlHeight2);
-    
-    randWidth = random(0, width);
-    randHeight = random(0, height);
-    controlWidth = random(0, width);
-    controlHeight = random(0, height);
-    controlWidth2 = random(0, width);
-    controlHeight2 = random(0, height);
-    randWidth2 = random(0, width);
-    randHeight2 = random(0, height);
+  for(let i = 0; i < 4000; i++){
+    strokeWeight(Math.floor(random(1,5)));
+    stroke(random(0,255), random(0,255), random(0,255));
+    curve(randWidth,randHeight,controlWidth,controlHeight,controlWidth2,controlHeight2,randWidth2,randHeight2)
+    randWidth = Math.floor(random(0, 2000));
+    randHeight = Math.floor(random(0, 2000));
+    controlWidth = Math.floor(random(0, 2000));
+    controlHeight = Math.floor(random(0, 2000));
+    controlWidth2 = Math.floor(random(0, 2000));
+    controlHeight2 = Math.floor(random(0, 2000));
+    randWidth2 = Math.floor(random(0, 2000));
+    randHeight2 = Math.floor(random(0, 2000));
   }
 }
