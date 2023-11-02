@@ -8,8 +8,15 @@
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  noStroke();
+  noFill();
+  something();
 }
 
-function draw() {
-  background(220);
+function something(){
+  
+  for(let i = 0; i < 500000; i++){
+    fill(random(0,255),random(0,255),random(0,255))
+    circle(random(0, windowWidth),random(0,windowHeight),2);
+  }
 }
