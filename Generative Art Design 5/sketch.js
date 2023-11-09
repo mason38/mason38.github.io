@@ -1,9 +1,8 @@
-// Project Title
-// Your Name
-// Date
+// Generative Art Design 5
+// Mason L.
+// Nov 6
 //
-// Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+
 
 let squareSize = 5;
 
@@ -16,7 +15,6 @@ function setup() {
 }
 
 function drawRectangles() {
-  let s = squareSize;
   let centerX = width / 2;
   let centerY = height / 2;
   for (let s = 1000; s < 200000; s++) {

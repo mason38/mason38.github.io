@@ -7,7 +7,7 @@
 
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(2000, 2000);
   noStroke();
   noFill();
   something();
@@ -16,7 +16,7 @@ function setup() {
 function something(){
   
   for(let i = 0; i < 500000; i++){
-    fill(random(0,255),random(0,255),random(0,255))
-    circle(random(0, windowWidth),random(0,windowHeight),2);
+    fill(random(0,255),random(0,255),random(0,255));
+    circle(random(0, 2000),random(0,2000),2);
   }
 }
