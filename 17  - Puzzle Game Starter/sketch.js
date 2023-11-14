@@ -15,7 +15,7 @@ function setup() {
   createCanvas(rectWidth*NUM_COLS, rectHeight*NUM_ROWS);
 }
 
-function randomGrid(){
+function randomGrid(){ // will go through each square in the grid and give a black or white colour
   
   for (let i = 0; i < grid.length; i++){
     for (let s = 0; s < 5; s++){
@@ -65,16 +65,16 @@ function mousePressed(){
 function winCondition(){
   let first = grid[0][0];
 
-  for(let x = 0; x < NUM_COLS; x ++){
+  for(let x = 0; x < NUM_COLS; x ++){ // check each square
     for(let y = 0; y < NUM_ROWS; y ++){
-      let item = grid[y][x];
-      print(item);
+      let item = grid[y][x]; // is the square same as the first square
+
       if (item !== first){
         return;
       }
     }
   }
-  if(first === 0){
+  if(first === 0){ // fill value for when the grid is all white or black
     fill(255);
   }
   else{
@@ -114,6 +114,15 @@ function renderGrid(){
       let fillValue = grid[y][x];
       fill(fillValue);
       rect(x*rectWidth, y*rectHeight, rectWidth, rectHeight);
+      if (x===col && y===row) {
+        // this is an overlay for the squares
+        fill(0, 255, 0, 100); // transparent light green 
+        rect(x*rectWidth, y*rectHeight, rectWidth, rectHeight);// draw overlay on the square you are hovering on
+        if (x>0) rect((x-1)*rectWidth, y*rectHeight, rectWidth, rectHeight);
+        if (y>0) rect(x*rectWidth, (y-1)*rectHeight, rectWidth, rectHeight);
+        if (x<NUM_COLS-1) rect((x+1)*rectWidth, y*rectHeight, rectWidth, rectHeight);
+        if (y<NUM_ROWS-1) rect(x*rectWidth, (y+1)*rectHeight, rectWidth, rectHeight);
+      }
     }
   }
 }
