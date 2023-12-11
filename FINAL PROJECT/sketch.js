@@ -50,7 +50,7 @@ function draw() {
 function renderGrid(){
   for(let x = 0;  x < NUM_COLS; x++){
     for(let y = 0; y < NUM_ROWS; y++){
-      strokeWeight(1);
+      strokeWeight(0);
       let currentTile = grid[y][x];
       if (currentTile===1){
         image(raft, x*squareSize, y*squareSize, 60,60);
@@ -91,30 +91,22 @@ function raftSelectGreen(){
   if(oneKey===true){
     for(let x = 0;  x < NUM_COLS; x++){
       for(let y = 0; y < NUM_ROWS; y++){
-        let mousePos = grid[gridRow][gridColoumn];
-        if(grid[y][x]===mousePos&&oneKey===true){
-          for(let x = 0;  x < NUM_COLS; x++){
-            for(let y = 0; y < NUM_ROWS; y++){
-              if (grid[y][x]===1){
-                if(grid[y+1][x]===0){
-                  fill(0,255,50,50);
-                  rect(x*squareSize, y*squareSize, squareSize, squareSize);
-                } 
-                if(grid[y-1][x]===0){
-                  fill(0,255,50,50);
-                  rect(x*squareSize, y*squareSize, squareSize, squareSize);
-                }
-                if(grid[y][x+1]===0){
-                  fill(0,255,50,50);
-                  rect(x*squareSize, y*squareSize, squareSize, squareSize);
-                }
-                if(grid[y][x-1]===0){
-                  fill(0,255,50,50);
-                  rect(x*squareSize, y*squareSize, squareSize, squareSize);
-                }
-              }
-            }
-          } 
+        fill(0,100,255);
+        if(grid[y][x]===1){//at raft             
+          if(grid[y+1][x]===0){
+            fill(0,255,100,100);
+            rect(x*squareSize, (y+1)*squareSize, squareSize, squareSize);          } 
+          if(grid[y-1][x]===0){
+            fill(0,255,100,100);
+            rect(x*squareSize, (y-1)*squareSize, squareSize, squareSize);          }
+          if(grid[y][x+1]===0){
+            fill(0,255,100,100);
+            rect((x+1)*squareSize, y*squareSize, squareSize, squareSize);
+          }
+          if(grid[y][x-1]===0){
+            fill(0,255,100,100);
+            rect((x-1)*squareSize, y*squareSize, squareSize, squareSize);
+          }   
         }
       }
     }
@@ -123,10 +115,19 @@ function raftSelectGreen(){
     for(let x = 0;  x < NUM_COLS; x++){
       for(let y = 0; y < NUM_ROWS; y++){
         if (grid[y][x]===0){
-          fill(255);
+          fill(0,100,255);
           rect(x*squareSize, y*squareSize, squareSize, squareSize);
         }
       }
     }  
+  }
+}
+
+function mousePressed(){
+  if(oneKey===true){
+    if(grid[gridRow][gridColoumn]===0 && ( grid[gridRow+1][gridColoumn] || grid[gridRow-1][gridColoumn] || grid[gridRow][gridColoumn+1] || grid[gridRow][gridColoumn-1]) ===1){
+      grid[gridRow][gridColoumn] = 1;
+      image(raft, gridColoumn*squareSize, gridRow*squareSize, 60,60);
+    }
   }
 }
