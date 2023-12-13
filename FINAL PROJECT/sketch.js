@@ -21,7 +21,6 @@ let grid = [
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 ];
 
-let raftOriginR = 16;
 let NUM_ROWS = 18;
 let NUM_COLS = 32;
 let squareSize = 60;
@@ -91,26 +90,42 @@ function raftSelectGreen(){
     for(let x = 0;  x < NUM_COLS; x++){
       for(let y = 0; y < NUM_ROWS; y++){
         fill(0,100,255);
+        if(grid[y][x]===2){
+          fill(255,0,0,100);
+        }
         if(grid[y][x]===1){//at raft             
-          if(grid[y+1][x]===0 || grid[y+1][x]===2){
+          if(grid[y+1][x]===0){
             fill(0,255,100,100);
-            if(grid[y+1][x]===2){
-              fill(255,0,0,100);
-            }         
             rect(x*squareSize, (y+1)*squareSize, squareSize, squareSize);
-          }          
+          } 
+          if(grid[y+1][x]===2){
+            fill(255,0,0,100);
+            rect(x*squareSize, (y+1)*squareSize, squareSize, squareSize);
+          }               
           if(grid[y-1][x]===0){
             fill(0,255,100,100);
-            rect(x*squareSize, (y-1)*squareSize, squareSize, squareSize);          
+            rect(x*squareSize, (y-1)*squareSize, squareSize, squareSize);  
           }
+          if(grid[y-1][x]===2){
+            fill(255,0,0,100);
+            rect(x*squareSize, (y+1)*squareSize, squareSize, squareSize);
+          }      
           if(grid[y][x+1]===0){
             fill(0,255,100,100);        
             rect((x+1)*squareSize, y*squareSize, squareSize, squareSize);
           } 
+          if(grid[y][x+1]===2){            
+            fill(0,255,100,100);        
+            rect((x+1)*squareSize, y*squareSize, squareSize, squareSize);
+          }
           if(grid[y][x-1]===0){
             fill(0,255,100,100);
             rect((x-1)*squareSize, y*squareSize, squareSize, squareSize);
           }   
+          if(grid[y][x-1]===2){
+            fill(0,255,100,100);
+            rect((x-1)*squareSize, y*squareSize, squareSize, squareSize);
+          }
         }
       }
     }
