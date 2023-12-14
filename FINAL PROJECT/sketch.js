@@ -28,6 +28,7 @@ let raft;
 let gridColoumn;
 let gridRow;
 let oneKey = false;
+let objects = [];
 
 function preload(){
   raft = loadImage("assets/33770b1f8b51af8.png");
@@ -43,9 +44,16 @@ function draw() {
   gridColoumn = mouseGridX();
   gridRow = mouseGridY();
   print(gridColoumn, gridRow);
-  background(220);
   renderGrid();
   raftSelectGreen();
+  //print(frameCount);
+  if (frameCount % 50 === 0){
+    objects.push(new floatingWood(0,random(0, height)));
+  }
+  for(let o of objects){
+    o.move();
+    o.display();
+  }
 }
 
 function renderGrid(){
@@ -57,6 +65,7 @@ function renderGrid(){
         image(raft, x*squareSize, y*squareSize, 60,60);
       }
       else if(currentTile===0 || currentTile===2){
+        fill(0,100,255,100);
         rect(x*squareSize, y*squareSize, squareSize, squareSize);
 
       }
@@ -90,42 +99,27 @@ function raftSelectGreen(){
     for(let x = 0;  x < NUM_COLS; x++){
       for(let y = 0; y < NUM_ROWS; y++){
         fill(0,100,255);
-        if(grid[y][x]===2){
-          fill(255,0,0,100);
-        }
         if(grid[y][x]===1){//at raft             
           if(grid[y+1][x]===0){
             fill(0,255,100,100);
             rect(x*squareSize, (y+1)*squareSize, squareSize, squareSize);
           } 
-          if(grid[y+1][x]===2){
-            fill(255,0,0,100);
-            rect(x*squareSize, (y+1)*squareSize, squareSize, squareSize);
-          }               
+                   
           if(grid[y-1][x]===0){
             fill(0,255,100,100);
             rect(x*squareSize, (y-1)*squareSize, squareSize, squareSize);  
           }
-          if(grid[y-1][x]===2){
-            fill(255,0,0,100);
-            rect(x*squareSize, (y+1)*squareSize, squareSize, squareSize);
-          }      
+             
           if(grid[y][x+1]===0){
             fill(0,255,100,100);        
             rect((x+1)*squareSize, y*squareSize, squareSize, squareSize);
           } 
-          if(grid[y][x+1]===2){            
-            fill(0,255,100,100);        
-            rect((x+1)*squareSize, y*squareSize, squareSize, squareSize);
-          }
+         
           if(grid[y][x-1]===0){
             fill(0,255,100,100);
             rect((x-1)*squareSize, y*squareSize, squareSize, squareSize);
           }   
-          if(grid[y][x-1]===2){
-            fill(0,255,100,100);
-            rect((x-1)*squareSize, y*squareSize, squareSize, squareSize);
-          }
+        
         }
       }
     }
@@ -150,3 +144,31 @@ function mousePressed(){
     }
   }
 }
+
+class floatingObjects{
+  constructor(x,y){
+    this.x = x;
+    this.y = y;
+    this.s = 1;
+    this.speedX = 5;
+  }
+
+  move(){
+    this.x += 1;
+  }
+
+  display(){
+    strokeWeight(2);
+  }
+}
+
+class floatingWood extends floatingObjects{
+  constructor(x,y){
+    super(x,y);
+  }
+  display(){
+    fill("brown");
+    rect(this.x, this.y, 20, 10);
+  }
+}
+
