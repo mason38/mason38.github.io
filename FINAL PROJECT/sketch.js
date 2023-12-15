@@ -36,6 +36,7 @@ function preload(){
 
 function setup() {
   createCanvas(squareSize*NUM_COLS, squareSize*NUM_ROWS);
+  //background(0,100,255);
   print(windowHeight);
   print(windowWidth);
 }
@@ -47,6 +48,9 @@ function draw() {
   renderGrid();
   raftSelectGreen();
   //print(frameCount);
+}
+
+function materialsRender(){
   if (frameCount % 50 === 0){
     objects.push(new floatingWood(0,random(0, height)));
   }
@@ -65,12 +69,11 @@ function renderGrid(){
         image(raft, x*squareSize, y*squareSize, 60,60);
       }
       else if(currentTile===0 || currentTile===2){
-        fill(0,100,255,100);
         rect(x*squareSize, y*squareSize, squareSize, squareSize);
-
       }
     }
   }
+  
 }
 
 function mouseGridX(){
@@ -98,7 +101,7 @@ function raftSelectGreen(){
   if(oneKey===true){
     for(let x = 0;  x < NUM_COLS; x++){
       for(let y = 0; y < NUM_ROWS; y++){
-        fill(0,100,255);
+        fill(0,100,255,100);
         if(grid[y][x]===1){//at raft             
           if(grid[y+1][x]===0){
             fill(0,255,100,100);
@@ -127,9 +130,23 @@ function raftSelectGreen(){
   else if(oneKey===false){
     for(let x = 0;  x < NUM_COLS; x++){
       for(let y = 0; y < NUM_ROWS; y++){
-        if (grid[y][x]===0){
+        if (grid[y][x]===0 || grid[y][x]===2){
           fill(0,100,255);
           rect(x*squareSize, y*squareSize, squareSize, squareSize);
+        } 
+      }
+    }
+    if (frameCount % 50 === 0){
+      objects.push(new floatingWood(0,random(0, height)));
+    }
+    for(let o of objects){
+      o.move();
+      o.display();
+    }
+    for(let x = 0;  x < NUM_COLS; x++){
+      for(let y = 0; y < NUM_ROWS; y++){
+        if (grid[y][x]===1){
+          image(raft, x*squareSize, y*squareSize, 60,60);
         }
       }
     }  
@@ -154,7 +171,7 @@ class floatingObjects{
   }
 
   move(){
-    this.x += 1;
+    this.x += 5;
   }
 
   display(){
@@ -167,8 +184,8 @@ class floatingWood extends floatingObjects{
     super(x,y);
   }
   display(){
-    fill("brown");
-    rect(this.x, this.y, 20, 10);
+    fill(240,230,140);
+    rect(this.x, this.y, 40, 20);
   }
 }
 
