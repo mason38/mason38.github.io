@@ -44,15 +44,20 @@ function setup() {
 function draw() {
   gridColoumn = mouseGridX();
   gridRow = mouseGridY();
-  print(gridColoumn, gridRow);
+  // print(gridColoumn, gridRow);
   renderGrid();
   raftSelectGreen();
   //print(frameCount);
 }
 
+
+
 function materialsRender(){
-  if (frameCount % 50 === 0){
+  if (frameCount % Math.floor(random(100,200)) === 0){
     objects.push(new floatingWood(0,random(0, height)));
+  }
+  if (frameCount % Math.floor(random(100,200)) === 0){
+    objects.push(new floatingPlastic(0,random(0, height)));
   }
   for(let o of objects){
     o.move();
@@ -136,13 +141,7 @@ function raftSelectGreen(){
         } 
       }
     }
-    if (frameCount % 50 === 0){
-      objects.push(new floatingWood(0,random(0, height)));
-    }
-    for(let o of objects){
-      o.move();
-      o.display();
-    }
+    materialsRender();
     for(let x = 0;  x < NUM_COLS; x++){
       for(let y = 0; y < NUM_ROWS; y++){
         if (grid[y][x]===1){
@@ -155,7 +154,7 @@ function raftSelectGreen(){
 
 function mousePressed(){
   if(oneKey===true){
-    if(grid[gridRow][gridColoumn]===0 && ( grid[gridRow+1][gridColoumn] || grid[gridRow-1][gridColoumn] || grid[gridRow][gridColoumn+1] || grid[gridRow][gridColoumn-1]) ===1){
+    if(grid[gridRow][gridColoumn]===0 && (grid[gridRow+1][gridColoumn] ===1|| grid[gridRow-1][gridColoumn] ===1|| grid[gridRow][gridColoumn+1]===1 || grid[gridRow][gridColoumn-1]===1)){
       grid[gridRow][gridColoumn] = 1;
       image(raft, gridColoumn*squareSize, gridRow*squareSize, 60,60);
     }
@@ -171,7 +170,7 @@ class floatingObjects{
   }
 
   move(){
-    this.x += 5;
+    this.x += 3;
   }
 
   display(){
@@ -186,6 +185,16 @@ class floatingWood extends floatingObjects{
   display(){
     fill(240,230,140);
     rect(this.x, this.y, 40, 20);
+  }
+}
+
+class floatingPlastic extends floatingObjects{
+  constructor(x,y){
+    super(x,y);
+  }
+  display(){
+    fill(220,240,239);
+    circle(this.x, this.y, 20);
   }
 }
 
