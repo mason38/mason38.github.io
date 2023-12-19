@@ -48,6 +48,7 @@ function draw() {
   renderGrid();
   raftSelectGreen();
   //print(frameCount);
+  hotBar();
 }
 
 
@@ -62,6 +63,11 @@ function materialsRender(){
   for(let o of objects){
     o.move();
     o.display();
+  }
+  for(let i = 1; i < objects.length-1; i++){
+    if(objects[i].x > windowWidth){
+      objects.splice(i,1);
+    }
   }
 }
 
@@ -158,6 +164,14 @@ function mousePressed(){
       grid[gridRow][gridColoumn] = 1;
       image(raft, gridColoumn*squareSize, gridRow*squareSize, 60,60);
     }
+  }
+}
+
+function hotBar(){
+  for (let i = 1; i < 11; i++){
+    strokeWeight(1);
+    fill(255);
+    rect((10+i)*60,windowHeight-60,60,60);
   }
 }
 
