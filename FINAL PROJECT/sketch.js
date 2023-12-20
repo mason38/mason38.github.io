@@ -29,6 +29,14 @@ let gridColoumn;
 let gridRow;
 let oneKey = false;
 let objects = [];
+let woodCount = 0;
+let plasticCount = 0;
+let playerPostionX;
+let playerPostionY;
+let hookPos;
+let hookTargetPos;
+let hookVelocity;
+let casting = 0;
 
 function preload(){
   raft = loadImage("assets/33770b1f8b51af8.png");
@@ -39,6 +47,11 @@ function setup() {
   //background(0,100,255);
   print(windowHeight);
   print(windowWidth);
+  playerPostionX = width/2;
+  playerPostionY = height/2;
+  hookPos = createVector(playerPostionX, playerPostionY);
+  hookTargetPos= createVector(playerPostionX, playerPostionY);
+  hookVelocity = createVector(0,0);
 }
 
 function draw() {
@@ -48,17 +61,24 @@ function draw() {
   renderGrid();
   raftSelectGreen();
   //print(frameCount);
+  
   hotBar();
+  line(playerPostionX,playerPostionY,hookPos.x, hookPos.y);
+  playerData();
+  hookData();
 }
 
 
 
 function materialsRender(){
-  if (frameCount % Math.floor(random(100,200)) === 0){
+  if (frameCount % Math.floor(random(200,400)) === 0){
     objects.push(new floatingWood(0,random(0, height)));
   }
-  if (frameCount % Math.floor(random(100,200)) === 0){
+  if (frameCount % Math.floor(random(200,400)) === 0){
     objects.push(new floatingPlastic(0,random(0, height)));
+  }
+  if (frameCount % Math.floor(random(2000,4000)) === 0){
+    objects.push(new floatingBarrels(0,random(0, height)));
   }
   for(let o of objects){
     o.move();
@@ -165,6 +185,45 @@ function mousePressed(){
       image(raft, gridColoumn*squareSize, gridRow*squareSize, 60,60);
     }
   }
+  if(casting===0){
+    hookTargetPos.x = mouseX;
+    hookTargetPos.y = mouseY;
+    hookVelocity = p5.Vector.sub(hookTargetPos, hookPos);
+    hookVelocity.normalize();
+    hookVelocity.mult(6);
+    casting = 1;
+  } 
+}
+
+function playerData(){
+  fill(255, 204, 153);
+  strokeWeight(2);
+  circle(playerPostionX, playerPostionY, 45);
+  
+}
+
+function hookData(){
+  let playerPos = createVector(playerPostionX,playerPostionY);
+  hookPos.add(hookVelocity);
+  fill(51,51,51);
+  rect(hookPos.x, hookPos.y, 10, 15);
+  fill(153, 0, 0);
+  rect(hookPos.x, hookPos.y-15,10,15 );
+  fill(51,51,51);
+  circle(mouseX, mouseY, 10);
+  if(casting===1 && dist(hookPos.x, hookPos.y, hookTargetPos.x, hookTargetPos.y) < 10){
+    hookVelocity=createVector(0,0);
+    casting = 2;
+
+    hookVelocity = p5.Vector.sub(playerPos, hookPos);
+    hookVelocity.normalize();
+    hookVelocity.mult(6);
+
+  }
+  if(casting===2 && dist(hookPos.x, hookPos.y, playerPos.x, playerPos.y) < 10){
+    hookVelocity = createVector(0,0);
+    casting = 0;
+  }
 }
 
 function hotBar(){
@@ -175,16 +234,14 @@ function hotBar(){
   }
 }
 
-class floatingObjects{
+function hookCollisions(){
+  boolean RectRect();
+}
+
+class allObjects{
   constructor(x,y){
     this.x = x;
     this.y = y;
-    this.s = 1;
-    this.speedX = 5;
-  }
-
-  move(){
-    this.x += 3;
   }
 
   display(){
@@ -192,9 +249,12 @@ class floatingObjects{
   }
 }
 
-class floatingWood extends floatingObjects{
+class floatingWood extends allObjects{
   constructor(x,y){
     super(x,y);
+  }
+  move(){
+    this.x += 3;
   }
   display(){
     fill(240,230,140);
@@ -202,13 +262,39 @@ class floatingWood extends floatingObjects{
   }
 }
 
-class floatingPlastic extends floatingObjects{
+class floatingPlastic extends allObjects{
   constructor(x,y){
     super(x,y);
+  }
+  move(){
+    this.x += 3;
   }
   display(){
     fill(220,240,239);
     circle(this.x, this.y, 20);
+  }
+}
+
+class floatingBarrels extends allObjects{
+  constructor(x,y){
+    super(x,y);
+  }
+  move(){
+    this.x += 1;
+  }
+  display(){
+    fill(92,64,51);
+    rect(this.x, this.y, 50, 60);
+  }
+}
+
+class nonFloatingWood extends allObjects{
+  constructor(x,y){
+    super(x,y);
+  }
+  display(){
+    fill(240,230,140);
+    rect(this.x, this.y, 40, 20);
   }
 }
 
