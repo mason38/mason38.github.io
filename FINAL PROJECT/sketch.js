@@ -66,6 +66,7 @@ function draw() {
   line(playerPostionX,playerPostionY,hookPos.x, hookPos.y);
   playerData();
   hookData();
+  hookCollisions();
 }
 
 
@@ -235,7 +236,14 @@ function hotBar(){
 }
 
 function hookCollisions(){
-  boolean RectRect();
+  for (let i = 0; i < objects.length; i++){
+    let floatingWoodPosition = createVector(objects[i].x, objects[i].y);
+    let floatingWoodSize = createVector(objects[i].floatingWoodWidth, objects[i].floatingWoodHeight);
+    let hookDimensions = createVector(10, 30);
+    let hit = (hookPos, hookDimensions, floatingWoodPosition, floatingWoodSize);
+    print(hit);
+  }
+  
 }
 
 class allObjects{
@@ -257,8 +265,10 @@ class floatingWood extends allObjects{
     this.x += 3;
   }
   display(){
+    let floatingWoodWidth = 40;
+    let floatingWoodHeight = 20;
     fill(240,230,140);
-    rect(this.x, this.y, 40, 20);
+    rect(this.x, this.y, floatingWoodWidth, floatingWoodHeight);
   }
 }
 
