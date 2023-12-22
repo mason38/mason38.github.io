@@ -37,6 +37,8 @@ let hookPos;
 let hookTargetPos;
 let hookVelocity;
 let casting = 0;
+let woodHit = false;
+let plasticHit = false;
 
 function preload(){
   raft = loadImage("assets/33770b1f8b51af8.png");
@@ -52,6 +54,7 @@ function setup() {
   hookPos = createVector(playerPostionX, playerPostionY);
   hookTargetPos= createVector(playerPostionX, playerPostionY);
   hookVelocity = createVector(0,0);
+  objects.push(new floatingWood(0,random(0, height)));
 }
 
 function draw() {
@@ -236,12 +239,20 @@ function hotBar(){
 }
 
 function hookCollisions(){
+
   for (let i = 0; i < objects.length; i++){
-    let floatingWoodPosition = createVector(objects[i].x, objects[i].y);
-    let floatingWoodSize = createVector(objects[i].floatingWoodWidth, objects[i].floatingWoodHeight);
-    let hookDimensions = createVector(10, 30);
-    let hit = (hookPos, hookDimensions, floatingWoodPosition, floatingWoodSize);
-    print(hit);
+    woodHit = collideRectRect(hookPos.x, hookPos.y, 10, 30, objects[i].x, objects[i].y, objects[i].objectWidth, objects[i].objectHeight);
+    plasticHit = collideRectCircle(hookPos.x, hookPos.y, 10, 30, objects[i].x, objects[i].y, objects[i].circleDiameter);
+    if (woodHit){
+      objects.splice(i,1);
+      woodCount += 1;
+      print(woodCount);
+    }
+    if (plasticHit){
+      objects.splice(i,1);
+      plasticCount += 1;
+      print(plasticCount);
+    }
   }
   
 }
@@ -260,28 +271,29 @@ class allObjects{
 class floatingWood extends allObjects{
   constructor(x,y){
     super(x,y);
+    this.objectWidth = 40;
+    this.objectHeight = 20;
   }
   move(){
     this.x += 3;
   }
-  display(){
-    let floatingWoodWidth = 40;
-    let floatingWoodHeight = 20;
+  display(){  
     fill(240,230,140);
-    rect(this.x, this.y, floatingWoodWidth, floatingWoodHeight);
+    rect(this.x, this.y, this.objectWidth, this.objectHeight);
   }
 }
 
 class floatingPlastic extends allObjects{
   constructor(x,y){
     super(x,y);
+    this.circleDiameter = 20;
   }
   move(){
     this.x += 3;
   }
   display(){
     fill(220,240,239);
-    circle(this.x, this.y, 20);
+    circle(this.x, this.y, this.circleDiameter);
   }
 }
 
