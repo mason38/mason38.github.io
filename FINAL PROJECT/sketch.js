@@ -39,6 +39,7 @@ let hookVelocity;
 let casting = 0;
 let woodHit = false;
 let plasticHit = false;
+let barrelHit = false;
 
 function preload(){
   raft = loadImage("assets/33770b1f8b51af8.png");
@@ -70,6 +71,7 @@ function draw() {
   playerData();
   hookData();
   hookCollisions();
+  print(millis);
 }
 
 
@@ -161,6 +163,12 @@ function raftSelectGreen(){
         }
       }
     }
+    fill(255);
+    rect(50, 50, 300, height-100);
+    fill(0);
+    text("Wood Count = " + woodCount, 100, 100);
+    text("Plastic Count = " + plasticCount, 100, 125);
+    image(wood)
   }
   else if(oneKey===false){
     for(let x = 0;  x < NUM_COLS; x++){
@@ -243,18 +251,30 @@ function hookCollisions(){
   for (let i = 0; i < objects.length; i++){
     woodHit = collideRectRect(hookPos.x, hookPos.y, 10, 30, objects[i].x, objects[i].y, objects[i].objectWidth, objects[i].objectHeight);
     plasticHit = collideRectCircle(hookPos.x, hookPos.y, 10, 30, objects[i].x, objects[i].y, objects[i].circleDiameter);
+    barrelHit = collideRectRect(hookPos.x, hookPos.y, 10, 30, objects[i].x, objects[i].y, objects[i].objectWidth, objects[i].objectHeight);
+
     if (woodHit){
-      objects.splice(i,1);
-      woodCount += 1;
-      print(woodCount);
+      if (objects[i].objectHeight===20){
+        objects.splice(i,1);
+        woodCount += 1;
+        print(woodCount);
+      }      
     }
     if (plasticHit){
       objects.splice(i,1);
       plasticCount += 1;
       print(plasticCount);
     }
+    if (barrelHit){
+      if (objects[i].objectHeight===60){
+        objects.splice(i,1);
+        woodCount += Math.floor(random(3,6));
+        plasticCount += Math.floor(random(3,6));
+        print(woodCount);
+        print(plasticCount);
+      }     
+    }
   }
-  
 }
 
 class allObjects{
@@ -300,13 +320,15 @@ class floatingPlastic extends allObjects{
 class floatingBarrels extends allObjects{
   constructor(x,y){
     super(x,y);
+    this.objectWidth = 50;
+    this.objectHeight = 60;
   }
   move(){
     this.x += 1;
   }
   display(){
     fill(92,64,51);
-    rect(this.x, this.y, 50, 60);
+    rect(this.x, this.y, this.objectHeight, this.objectWidth);
   }
 }
 
