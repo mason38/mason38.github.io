@@ -136,49 +136,29 @@ function keyPressed(){
 
 function raftSelectGreen(){
   if(oneKey===true){
-    for(let x = 0;  x < NUM_COLS; x++){
-      for(let y = 0; y < NUM_ROWS; y++){
-        fill(0,100,255,100);
-        if(grid[y][x]===1){//at raft             
-          if(grid[y+1][x]===0){
-            fill(0,255,100,100);
-            rect(x*squareSize, (y+1)*squareSize, squareSize, squareSize);
-          } 
-                   
-          if(grid[y-1][x]===0){
-            fill(0,255,100,100);
-            rect(x*squareSize, (y-1)*squareSize, squareSize, squareSize);  
-          }
-             
-          if(grid[y][x+1]===0){
-            fill(0,255,100,100);        
-            rect((x+1)*squareSize, y*squareSize, squareSize, squareSize);
-          } 
-         
-          if(grid[y][x-1]===0){
-            fill(0,255,100,100);
-            rect((x-1)*squareSize, y*squareSize, squareSize, squareSize);
-          }   
-        
-        }
-      }
-    }
     fill(255);
     rect(50, 50, 300, height-100);
     fill(0);
     text("Wood Count = " + woodCount, 100, 100);
     text("Plastic Count = " + plasticCount, 100, 125);
-    image(wood)
+    strokeWeight(1);
+    line(50, 150, 350, 150);
+    text("Structures", 175, 165);
+    line(50, 180, 350, 180);
+    strokeWeight(0);
+    image(raft, 100, 200, 40, 40);
+    text("3 wood", 100, 260);
   }
   else if(oneKey===false){
-    for(let x = 0;  x < NUM_COLS; x++){
-      for(let y = 0; y < NUM_ROWS; y++){
-        if (grid[y][x]===0 || grid[y][x]===2){
-          fill(0,100,255);
-          rect(x*squareSize, y*squareSize, squareSize, squareSize);
-        } 
-      }
-    }
+    background("blue");
+    // for(let x = 0;  x < NUM_COLS; x++){
+    //   for(let y = 0; y < NUM_ROWS; y++){
+    //     if (grid[y][x]===0 || grid[y][x]===2){
+    //       fill(0,100,255);
+    //       rect(x*squareSize, y*squareSize, squareSize, squareSize);
+    //     } 
+    //   }
+    // }
     materialsRender();
     for(let x = 0;  x < NUM_COLS; x++){
       for(let y = 0; y < NUM_ROWS; y++){
@@ -191,20 +171,58 @@ function raftSelectGreen(){
 }
 
 function mousePressed(){
-  if(oneKey===true){
-    if(grid[gridRow][gridColoumn]===0 && (grid[gridRow+1][gridColoumn] ===1|| grid[gridRow-1][gridColoumn] ===1|| grid[gridRow][gridColoumn+1]===1 || grid[gridRow][gridColoumn-1]===1)){
-      grid[gridRow][gridColoumn] = 1;
-      image(raft, gridColoumn*squareSize, gridRow*squareSize, 60,60);
+  if(casting===0){
+    if(oneKey===false){
+      hookTargetPos.x = mouseX;
+      hookTargetPos.y = mouseY;
+      hookVelocity = p5.Vector.sub(hookTargetPos, hookPos);
+      hookVelocity.normalize();
+      hookVelocity.mult(6);
+      casting = 1;
     }
   }
-  if(casting===0){
-    hookTargetPos.x = mouseX;
-    hookTargetPos.y = mouseY;
-    hookVelocity = p5.Vector.sub(hookTargetPos, hookPos);
-    hookVelocity.normalize();
-    hookVelocity.mult(6);
-    casting = 1;
-  } 
+  
+}
+
+function mouseClicked(){
+  if(oneKey===true){
+    if(mouseX<140 && mouseX>100 && mouseY<240 && mouseY>200){
+      if(woodCount>=3){
+        woodCount = woodCount - 3;
+        for(let x = 0;  x < NUM_COLS; x++){
+          for(let y = 0; y < NUM_ROWS; y++){
+            fill(0,100,255,100);
+            if(grid[y][x]===1){//at raft             
+              if(grid[y+1][x]===0){
+                fill(0,255,100,100);
+                rect(x*squareSize, (y+1)*squareSize, squareSize, squareSize);
+              } 
+                       
+              if(grid[y-1][x]===0){
+                fill(0,255,100,100);
+                rect(x*squareSize, (y-1)*squareSize, squareSize, squareSize);  
+              }
+                 
+              if(grid[y][x+1]===0){
+                fill(0,255,100,100);        
+                rect((x+1)*squareSize, y*squareSize, squareSize, squareSize);
+              } 
+             
+              if(grid[y][x-1]===0){
+                fill(0,255,100,100);
+                rect((x-1)*squareSize, y*squareSize, squareSize, squareSize);
+              }   
+            
+            }
+          }
+        }
+        if(grid[gridRow][gridColoumn]===0 && (grid[gridRow+1][gridColoumn] ===1|| grid[gridRow-1][gridColoumn] ===1|| grid[gridRow][gridColoumn+1]===1 || grid[gridRow][gridColoumn-1]===1)){
+          grid[gridRow][gridColoumn] = 1;
+          image(raft, gridColoumn*squareSize, gridRow*squareSize, 60,60);
+        }
+      }
+    }
+  }
 }
 
 function playerData(){
