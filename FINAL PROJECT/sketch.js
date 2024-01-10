@@ -29,7 +29,7 @@ let gridColoumn;
 let gridRow;
 let oneKey = false;
 let objects = [];
-let woodCount = 0;
+let woodCount = 9;
 let plasticCount = 0;
 let playerPostionX;
 let playerPostionY;
@@ -37,9 +37,13 @@ let hookPos;
 let hookTargetPos;
 let hookVelocity;
 let casting = 0;
-let woodHit = false;
+let woodOrBarrelHit = false;
 let plasticHit = false;
-let barrelHit = false;
+let start = Date.now();
+let oceanColors = [];
+let placementPhase = 0;//0-not placing   1-item selected   2-placement
+let placementItem = "";
+
 
 function preload(){
   raft = loadImage("assets/33770b1f8b51af8.png");
@@ -56,6 +60,10 @@ function setup() {
   hookTargetPos= createVector(playerPostionX, playerPostionY);
   hookVelocity = createVector(0,0);
   objects.push(new floatingWood(0,random(0, height)));
+  oceanColors.push(color(51, 153, 255));
+  oceanColors.push(color(255, 153, 102));
+  oceanColors.push(color(0, 51, 204));
+
 }
 
 function draw() {
@@ -63,15 +71,13 @@ function draw() {
   gridRow = mouseGridY();
   // print(gridColoumn, gridRow);
   renderGrid();
-  raftSelectGreen();
+  //oneKeyMenu();
   //print(frameCount);
-  
-  hotBar();
-  line(playerPostionX,playerPostionY,hookPos.x, hookPos.y);
+  allOverlays();
   playerData();
   hookData();
   hookCollisions();
-  print(millis);
+  line(playerPostionX,playerPostionY,hookPos.x, hookPos.y);
 }
 
 
@@ -134,7 +140,23 @@ function keyPressed(){
   }
 }
 
-function raftSelectGreen(){
+function dayandNight(){
+  background(oceanColors[0]);
+  if(Date.now()-start>=20000){
+    background(oceanColors[1]);
+    if(Date.now()-start>=25000){
+      background(oceanColors[2]);
+      if(Date.now()-start>=35000){
+        background(oceanColors[1]);
+        if(Date.now()-start>=40000){
+          start = Date.now();  
+        }
+      }
+    }
+  }
+}
+
+function oneKeyMenuOverlay(){
   if(oneKey===true){
     fill(255);
     rect(50, 50, 300, height-100);
@@ -147,18 +169,10 @@ function raftSelectGreen(){
     line(50, 180, 350, 180);
     strokeWeight(0);
     image(raft, 100, 200, 40, 40);
-    text("3 wood", 100, 260);
+    text("3 Wood", 100, 260);
   }
   else if(oneKey===false){
-    background("blue");
-    // for(let x = 0;  x < NUM_COLS; x++){
-    //   for(let y = 0; y < NUM_ROWS; y++){
-    //     if (grid[y][x]===0 || grid[y][x]===2){
-    //       fill(0,100,255);
-    //       rect(x*squareSize, y*squareSize, squareSize, squareSize);
-    //     } 
-    //   }
-    // }
+    dayandNight();
     materialsRender();
     for(let x = 0;  x < NUM_COLS; x++){
       for(let y = 0; y < NUM_ROWS; y++){
@@ -181,47 +195,93 @@ function mousePressed(){
       casting = 1;
     }
   }
-  
-}
-
-function mouseClicked(){
   if(oneKey===true){
-    if(mouseX<140 && mouseX>100 && mouseY<240 && mouseY>200){
-      if(woodCount>=3){
-        woodCount = woodCount - 3;
-        for(let x = 0;  x < NUM_COLS; x++){
-          for(let y = 0; y < NUM_ROWS; y++){
-            fill(0,100,255,100);
-            if(grid[y][x]===1){//at raft             
-              if(grid[y+1][x]===0){
-                fill(0,255,100,100);
-                rect(x*squareSize, (y+1)*squareSize, squareSize, squareSize);
-              } 
-                       
-              if(grid[y-1][x]===0){
-                fill(0,255,100,100);
-                rect(x*squareSize, (y-1)*squareSize, squareSize, squareSize);  
-              }
-                 
-              if(grid[y][x+1]===0){
-                fill(0,255,100,100);        
-                rect((x+1)*squareSize, y*squareSize, squareSize, squareSize);
-              } 
-             
-              if(grid[y][x-1]===0){
-                fill(0,255,100,100);
-                rect((x-1)*squareSize, y*squareSize, squareSize, squareSize);
-              }   
-            
-            }
-          }
-        }
+    if(placementPhase<=1){
+      if(mouseX<140 && mouseX>100 && mouseY<240 && mouseY>200 && woodCount>=3){
+        placementPhase=1;
+        placementItem = "raft";
+      }
+      
+    }
+    // if(placementPhase===1){
+    // //actual placement
+    //   if(placementItem==="raft" && woodCount>=3){
+    //     placementPhase===2;
+    //   }
+    // }
+    if(placementPhase===1 && oneKey===true){
+      if(placementItem==="raft"){
         if(grid[gridRow][gridColoumn]===0 && (grid[gridRow+1][gridColoumn] ===1|| grid[gridRow-1][gridColoumn] ===1|| grid[gridRow][gridColoumn+1]===1 || grid[gridRow][gridColoumn-1]===1)){
           grid[gridRow][gridColoumn] = 1;
-          image(raft, gridColoumn*squareSize, gridRow*squareSize, 60,60);
+          image(raft, gridColoumn*squareSize, gridRow*squareSize, 60,60);//????
         }
       }
     }
+  }
+}
+
+function allOverlays(){
+  if(oneKey===true){
+    //menu overlay
+    fill(255);
+    rect(50, 50, 300, height-100);
+    fill(0);
+    text("Wood Count = " + woodCount, 100, 100);
+    text("Plastic Count = " + plasticCount, 100, 125);
+    strokeWeight(1);
+    line(50, 150, 350, 150);
+    text("Structures", 175, 165);
+    line(50, 180, 350, 180);
+    strokeWeight(0);
+    image(raft, 100, 200, 40, 40);
+    text("3 Wood", 100, 260);
+
+    //placement overlays
+    if(placementPhase===1){
+      if(placementItem==="raft"){
+        if(woodCount>=3){
+          for(let x = 0;  x < NUM_COLS; x++){
+            for(let y = 0; y < NUM_ROWS; y++){
+              fill(0,100,255,100);
+              if(grid[y][x]===1){//at raft             
+                if(grid[y+1][x]===0){
+                  fill(0,255,100,100);
+                  rect(x*squareSize, (y+1)*squareSize, squareSize, squareSize);
+                } 
+                        
+                if(grid[y-1][x]===0){
+                  fill(0,255,100,100);
+                  rect(x*squareSize, (y-1)*squareSize, squareSize, squareSize);  
+                }
+                  
+                if(grid[y][x+1]===0){
+                  fill(0,255,100,100);        
+                  rect((x+1)*squareSize, y*squareSize, squareSize, squareSize);
+                } 
+              
+                if(grid[y][x-1]===0){
+                  fill(0,255,100,100);
+                  rect((x-1)*squareSize, y*squareSize, squareSize, squareSize);
+                }   
+              
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  else if(oneKey===false){
+    //no longer in the menu
+    dayandNight();
+    materialsRender();
+    for(let x = 0;  x < NUM_COLS; x++){
+      for(let y = 0; y < NUM_ROWS; y++){
+        if (grid[y][x]===1){
+          image(raft, x*squareSize, y*squareSize, 60,60);
+        }
+      }
+    }  
   }
 }
 
@@ -256,41 +316,33 @@ function hookData(){
   }
 }
 
-function hotBar(){
-  for (let i = 1; i < 11; i++){
-    strokeWeight(1);
-    fill(255);
-    rect((10+i)*60,windowHeight-60,60,60);
-  }
-}
+
 
 function hookCollisions(){
 
   for (let i = 0; i < objects.length; i++){
-    woodHit = collideRectRect(hookPos.x, hookPos.y, 10, 30, objects[i].x, objects[i].y, objects[i].objectWidth, objects[i].objectHeight);
+    woodOrBarrelHit = collideRectRect(hookPos.x, hookPos.y, 10, 30, objects[i].x, objects[i].y, objects[i].objectWidth, objects[i].objectHeight);
     plasticHit = collideRectCircle(hookPos.x, hookPos.y, 10, 30, objects[i].x, objects[i].y, objects[i].circleDiameter);
-    barrelHit = collideRectRect(hookPos.x, hookPos.y, 10, 30, objects[i].x, objects[i].y, objects[i].objectWidth, objects[i].objectHeight);
+    
 
-    if (woodHit){
+    if (woodOrBarrelHit){
       if (objects[i].objectHeight===20){
         objects.splice(i,1);
         woodCount += 1;
         print(woodCount);
-      }      
-    }
-    if (plasticHit){
-      objects.splice(i,1);
-      plasticCount += 1;
-      print(plasticCount);
-    }
-    if (barrelHit){
-      if (objects[i].objectHeight===60){
+      } 
+      else if (objects[i].objectHeight===60){
         objects.splice(i,1);
         woodCount += Math.floor(random(3,6));
         plasticCount += Math.floor(random(3,6));
         print(woodCount);
         print(plasticCount);
-      }     
+      }       
+    }
+    if (plasticHit){
+      objects.splice(i,1);
+      plasticCount += 1;
+      print(plasticCount);
     }
   }
 }
