@@ -29,8 +29,8 @@ let gridColoumn;
 let gridRow;
 let oneKey = false;
 let objects = [];
-let woodCount = 9;
-let plasticCount = 0;
+let woodCount = 8;
+let plasticCount = 8;
 let playerPostionX;
 let playerPostionY;
 let hookPos;
@@ -43,6 +43,8 @@ let start = Date.now();
 let oceanColors = [];
 let placementPhase = 0;//0-not placing   1-item selected   2-placement
 let placementItem = "";
+let dayCount = 1;
+let healthCount = 4;
 
 
 function preload(){
@@ -78,6 +80,8 @@ function draw() {
   hookData();
   hookCollisions();
   line(playerPostionX,playerPostionY,hookPos.x, hookPos.y);
+  
+  
 }
 
 
@@ -91,6 +95,9 @@ function materialsRender(){
   }
   if (frameCount % Math.floor(random(2000,4000)) === 0){
     objects.push(new floatingBarrels(0,random(0, height)));
+  }
+  if (frameCount % Math.floor(random(200,400)) === 0){
+    objects.push(new floatingPiratesNorth(0,random(0, height*0.3)));
   }
   for(let o of objects){
     o.move();
@@ -150,6 +157,7 @@ function dayandNight(){
         background(oceanColors[1]);
         if(Date.now()-start>=40000){
           start = Date.now();  
+          dayCount = dayCount + 1;
         }
       }
     }
@@ -210,10 +218,12 @@ function mousePressed(){
     //   }
     // }
     if(placementPhase===1 && oneKey===true){
-      if(placementItem==="raft"){
+      if(placementItem==="raft" && woodCount > 0 && plasticCount > 0){
         if(grid[gridRow][gridColoumn]===0 && (grid[gridRow+1][gridColoumn] ===1|| grid[gridRow-1][gridColoumn] ===1|| grid[gridRow][gridColoumn+1]===1 || grid[gridRow][gridColoumn-1]===1)){
           grid[gridRow][gridColoumn] = 1;
           image(raft, gridColoumn*squareSize, gridRow*squareSize, 60,60);//????
+          woodCount = woodCount - 2;
+          plasticCount = plasticCount - 2;
         }
       }
     }
@@ -234,12 +244,12 @@ function allOverlays(){
     line(50, 180, 350, 180);
     strokeWeight(0);
     image(raft, 100, 200, 40, 40);
-    text("3 Wood", 100, 260);
+    text("2 Wood, 2 Plastic", 70, 260);
 
     //placement overlays
     if(placementPhase===1){
       if(placementItem==="raft"){
-        if(woodCount>=3){
+        if(woodCount >= 2 && plasticCount >= 2){
           for(let x = 0;  x < NUM_COLS; x++){
             for(let y = 0; y < NUM_ROWS; y++){
               fill(0,100,255,100);
@@ -274,6 +284,10 @@ function allOverlays(){
   else if(oneKey===false){
     //no longer in the menu
     dayandNight();
+    textSize(50);
+    fill(255);
+    text("DAY " + dayCount, width/2-75, height*0.9);
+    textSize(10);
     materialsRender();
     for(let x = 0;  x < NUM_COLS; x++){
       for(let y = 0; y < NUM_ROWS; y++){
@@ -281,7 +295,8 @@ function allOverlays(){
           image(raft, x*squareSize, y*squareSize, 60,60);
         }
       }
-    }  
+    }
+    placementPhase=0;  
   }
 }
 
@@ -347,6 +362,25 @@ function hookCollisions(){
   }
 }
 
+function pirateNorth(){
+  fill(102, 51, 0);
+  rect(this.x, 200, 150, 150);
+  fill(51, 51, 51);
+  rect(250, 300, 50, 100);
+  fill(255, 204, 153);
+  circle(275, 260, 45);
+}
+
+function pirateSouth(){
+  fill(102, 51, 0);
+  rect(600, 200, 150, 150);
+  fill(51, 51, 51);
+  rect(650, 150, 50, 100);
+  fill(255, 204, 153);
+  circle(675, 280, 45);
+}
+
+
 class allObjects{
   constructor(x,y){
     this.x = x;
@@ -402,13 +436,22 @@ class floatingBarrels extends allObjects{
   }
 }
 
-class nonFloatingWood extends allObjects{
+class floatingPiratesNorth extends allObjects{
   constructor(x,y){
     super(x,y);
+    this.objectWidth = 150;
+    this.objectHeight = 150;
+  }
+  move(){
+    this.x + 1;
   }
   display(){
-    fill(240,230,140);
-    rect(this.x, this.y, 40, 20);
+    fill(102, 51, 0);
+    rect(this.x, this.y, 150, 150);
+    fill(51, 51, 51);
+    rect(this.x+50, this.y+100, 50, 100);
+    fill(255, 204, 153);
+    circle(this.x+75, this.y+60, 45);
   }
 }
 
