@@ -97,7 +97,10 @@ function materialsRender(){
     objects.push(new floatingBarrels(0,random(0, height)));
   }
   if (frameCount % Math.floor(random(200,400)) === 0){
-    objects.push(new floatingPiratesNorth(0,random(0, height*0.3)));
+    objects.push(new floatingPiratesNorth(0,random(0, height*0.1)));
+  }
+  if (frameCount % Math.floor(random(200,400)) === 0){
+    objects.push(new floatingPiratesSouth(0,random(height*0.9, height)));
   }
   for(let o of objects){
     o.move();
@@ -164,34 +167,6 @@ function dayandNight(){
   }
 }
 
-function oneKeyMenuOverlay(){
-  if(oneKey===true){
-    fill(255);
-    rect(50, 50, 300, height-100);
-    fill(0);
-    text("Wood Count = " + woodCount, 100, 100);
-    text("Plastic Count = " + plasticCount, 100, 125);
-    strokeWeight(1);
-    line(50, 150, 350, 150);
-    text("Structures", 175, 165);
-    line(50, 180, 350, 180);
-    strokeWeight(0);
-    image(raft, 100, 200, 40, 40);
-    text("3 Wood", 100, 260);
-  }
-  else if(oneKey===false){
-    dayandNight();
-    materialsRender();
-    for(let x = 0;  x < NUM_COLS; x++){
-      for(let y = 0; y < NUM_ROWS; y++){
-        if (grid[y][x]===1){
-          image(raft, x*squareSize, y*squareSize, 60,60);
-        }
-      }
-    }  
-  }
-}
-
 function mousePressed(){
   if(casting===0){
     if(oneKey===false){
@@ -224,6 +199,7 @@ function mousePressed(){
           image(raft, gridColoumn*squareSize, gridRow*squareSize, 60,60);//????
           woodCount = woodCount - 2;
           plasticCount = plasticCount - 2;
+          healthCount++;
         }
       }
     }
@@ -298,6 +274,11 @@ function allOverlays(){
     }
     placementPhase=0;  
   }
+  fill("red");
+  rect(playerPostionX-50, playerPostionY+30, 100,20);
+  fill("green");
+  let takeOffGreen = map(0,0,healthCount,0,100);
+  rect(playerPostionX-50, playerPostionY+30, 100-takeOffGreen,20);
 }
 
 function playerData(){
@@ -432,7 +413,7 @@ class floatingBarrels extends allObjects{
   }
   display(){
     fill(92,64,51);
-    rect(this.x, this.y, this.objectHeight, this.objectWidth);
+    rect(this.x, this.y, this.objectWidth, this.objectHeight);
   }
 }
 
@@ -443,11 +424,30 @@ class floatingPiratesNorth extends allObjects{
     this.objectHeight = 150;
   }
   move(){
-    this.x + 1;
+    this.x += 1;
   }
   display(){
     fill(102, 51, 0);
-    rect(this.x, this.y, 150, 150);
+    rect(this.x, this.y, this.objectWidth, this.objectHeight);
+    fill(51, 51, 51);
+    rect(this.x+50, this.y+100, 50, 100);
+    fill(255, 204, 153);
+    circle(this.x+75, this.y+60, 45);
+  }
+}
+
+class floatingPiratesSouth extends allObjects{
+  constructor(x,y){
+    super(x,y);
+    this.objectWidth = 150;
+    this.objectHeight = 150;
+  }
+  move(){
+    this.x += 1;
+  }
+  display(){
+    fill(102, 51, 0);
+    rect(this.x, this.y, this.objectWidth, this.objectHeight);
     fill(51, 51, 51);
     rect(this.x+50, this.y+100, 50, 100);
     fill(255, 204, 153);
