@@ -45,6 +45,7 @@ let placementPhase = 0;//0-not placing   1-item selected   2-placement
 let placementItem = "";
 let dayCount = 1;
 let healthCount = 4;
+let cannonBallVelocity;
 
 
 function preload(){
@@ -80,6 +81,7 @@ function draw() {
   hookData();
   hookCollisions();
   line(playerPostionX,playerPostionY,hookPos.x, hookPos.y);
+  cannonBall();
   
   
 }
@@ -97,10 +99,10 @@ function materialsRender(){
     objects.push(new floatingBarrels(0,random(0, height)));
   }
   if (frameCount % Math.floor(random(200,400)) === 0){
-    objects.push(new floatingPiratesNorth(0,random(0, height*0.1)));
+    objects.push(new floatingPiratesNorth(0,random(0, height*0.05)));
   }
   if (frameCount % Math.floor(random(200,400)) === 0){
-    objects.push(new floatingPiratesSouth(0,random(height*0.9, height)));
+    objects.push(new floatingPiratesSouth(0,random(height*0.85, height*0.85)));
   }
   for(let o of objects){
     o.move();
@@ -183,8 +185,7 @@ function mousePressed(){
       if(mouseX<140 && mouseX>100 && mouseY<240 && mouseY>200 && woodCount>=3){
         placementPhase=1;
         placementItem = "raft";
-      }
-      
+      }     
     }
     // if(placementPhase===1){
     // //actual placement
@@ -209,6 +210,7 @@ function mousePressed(){
 function allOverlays(){
   if(oneKey===true){
     //menu overlay
+    textSize(10);
     fill(255);
     rect(50, 50, 300, height-100);
     fill(0);
@@ -225,6 +227,11 @@ function allOverlays(){
     //placement overlays
     if(placementPhase===1){
       if(placementItem==="raft"){
+        fill(255);
+        rect(400,50,700,height*0.1);
+        fill(0);
+        textSize(20);
+        text("Placing a raft tile will increase your maximum health by +1", 425, 75,575, 100);
         if(woodCount >= 2 && plasticCount >= 2){
           for(let x = 0;  x < NUM_COLS; x++){
             for(let y = 0; y < NUM_ROWS; y++){
@@ -260,11 +267,11 @@ function allOverlays(){
   else if(oneKey===false){
     //no longer in the menu
     dayandNight();
+    materialsRender();
     textSize(50);
     fill(255);
     text("DAY " + dayCount, width/2-75, height*0.9);
     textSize(10);
-    materialsRender();
     for(let x = 0;  x < NUM_COLS; x++){
       for(let y = 0; y < NUM_ROWS; y++){
         if (grid[y][x]===1){
@@ -309,6 +316,17 @@ function hookData(){
   if(casting===2 && dist(hookPos.x, hookPos.y, playerPos.x, playerPos.y) < 10){
     hookVelocity = createVector(0,0);
     casting = 0;
+  }
+}
+
+function cannonBall(){
+  for(let i = 0; i < objects.length; i++){
+    if(objects[i].objectHeight===0){
+      if(objects[i].x===playerPostionX){
+        fill(100);
+        circle(playerPostionX, objects[i].y,40);
+      }
+    }
   }
 }
 
@@ -449,9 +467,9 @@ class floatingPiratesSouth extends allObjects{
     fill(102, 51, 0);
     rect(this.x, this.y, this.objectWidth, this.objectHeight);
     fill(51, 51, 51);
-    rect(this.x+50, this.y+100, 50, 100);
+    rect(this.x+50, this.y-50, 50, 100);
     fill(255, 204, 153);
-    circle(this.x+75, this.y+60, 45);
+    circle(this.x+75, this.y+100, 45);
   }
 }
 
