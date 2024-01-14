@@ -44,8 +44,10 @@ let oceanColors = [];
 let placementPhase = 0;//0-not placing   1-item selected   2-placement
 let placementItem = "";
 let dayCount = 1;
-let healthCount = 4;
+let healthCount = 3;
+let maxHealthCount = 4;
 let cannonBallVelocity;
+let cannonBallObjects = [];
 
 
 function preload(){
@@ -81,7 +83,6 @@ function draw() {
   hookData();
   hookCollisions();
   line(playerPostionX,playerPostionY,hookPos.x, hookPos.y);
-  cannonBall();
   
   
 }
@@ -104,6 +105,8 @@ function materialsRender(){
   if (frameCount % Math.floor(random(200,400)) === 0){
     objects.push(new floatingPiratesSouth(0,random(height*0.85, height*0.85)));
   }
+  
+  
   for(let o of objects){
     o.move();
     o.display();
@@ -118,7 +121,7 @@ function materialsRender(){
 function renderGrid(){
   for(let x = 0;  x < NUM_COLS; x++){
     for(let y = 0; y < NUM_ROWS; y++){
-      strokeWeight(0);
+      strokeWeight(2);
       let currentTile = grid[y][x];
       if (currentTile===1){
         image(raft, x*squareSize, y*squareSize, 60,60);
@@ -182,10 +185,14 @@ function mousePressed(){
   }
   if(oneKey===true){
     if(placementPhase<=1){
-      if(mouseX<140 && mouseX>100 && mouseY<240 && mouseY>200 && woodCount>=3){
+      if(mouseX<140 && mouseX>100 && mouseY<240 && mouseY>200 && woodCount>=2 && plasticCount>=2){
         placementPhase=1;
         placementItem = "raft";
       }     
+      if(mouseX<220 && mouseX>180 && mouseY<240 && mouseY>200 && woodCount>=2 && plasticCount>=2 && healthCount<maxHealthCount){
+        placementPhase=1;
+        placementItem = "repair";
+      }
     }
     // if(placementPhase===1){
     // //actual placement
@@ -194,13 +201,22 @@ function mousePressed(){
     //   }
     // }
     if(placementPhase===1 && oneKey===true){
-      if(placementItem==="raft" && woodCount > 0 && plasticCount > 0){
+      if(placementItem==="raft" && woodCount > 1 && plasticCount > 1){
         if(grid[gridRow][gridColoumn]===0 && (grid[gridRow+1][gridColoumn] ===1|| grid[gridRow-1][gridColoumn] ===1|| grid[gridRow][gridColoumn+1]===1 || grid[gridRow][gridColoumn-1]===1)){
           grid[gridRow][gridColoumn] = 1;
           image(raft, gridColoumn*squareSize, gridRow*squareSize, 60,60);//????
           woodCount = woodCount - 2;
           plasticCount = plasticCount - 2;
-          healthCount++;
+          maxHealthCount++;
+        }
+      }
+      if(placementItem==="repair" && woodCount > 1 && plasticCount > 1){
+        if(grid[gridRow][gridColoumn]===1){
+          if(healthCount<maxHealthCount){
+            healthCount++;
+            woodCount = woodCount - 2;
+            plasticCount = plasticCount - 2;
+          }
         }
       }
     }
@@ -223,6 +239,15 @@ function allOverlays(){
     strokeWeight(0);
     image(raft, 100, 200, 40, 40);
     text("2 Wood, 2 Plastic", 70, 260);
+    fill(100);
+    rect(180, 200, 40, 40);
+    fill(255);
+    text("REPAIR", 182, 220);
+    fill(0);
+    text("2 Wood, 2 Plastic", 160, 260);
+
+    textSize(20);
+    text("press 1 to exit the build menu", 70, height - 150);
 
     //placement overlays
     if(placementPhase===1){
@@ -232,33 +257,47 @@ function allOverlays(){
         fill(0);
         textSize(20);
         text("Placing a raft tile will increase your maximum health by +1", 425, 75,575, 100);
-        if(woodCount >= 2 && plasticCount >= 2){
-          for(let x = 0;  x < NUM_COLS; x++){
-            for(let y = 0; y < NUM_ROWS; y++){
-              fill(0,100,255,100);
-              if(grid[y][x]===1){//at raft             
-                if(grid[y+1][x]===0){
-                  fill(0,255,100,100);
-                  rect(x*squareSize, (y+1)*squareSize, squareSize, squareSize);
-                } 
+        for(let x = 0;  x < NUM_COLS; x++){
+          for(let y = 0; y < NUM_ROWS; y++){
+            fill(0,100,255,100);
+            if(grid[y][x]===1){//at raft             
+              if(grid[y+1][x]===0){
+                fill(0,255,100,100);
+                rect(x*squareSize, (y+1)*squareSize, squareSize, squareSize);
+              } 
                         
-                if(grid[y-1][x]===0){
-                  fill(0,255,100,100);
-                  rect(x*squareSize, (y-1)*squareSize, squareSize, squareSize);  
-                }
-                  
-                if(grid[y][x+1]===0){
-                  fill(0,255,100,100);        
-                  rect((x+1)*squareSize, y*squareSize, squareSize, squareSize);
-                } 
-              
-                if(grid[y][x-1]===0){
-                  fill(0,255,100,100);
-                  rect((x-1)*squareSize, y*squareSize, squareSize, squareSize);
-                }   
-              
+              if(grid[y-1][x]===0){
+                fill(0,255,100,100);
+                rect(x*squareSize, (y-1)*squareSize, squareSize, squareSize);  
               }
+                  
+              if(grid[y][x+1]===0){
+                fill(0,255,100,100);        
+                rect((x+1)*squareSize, y*squareSize, squareSize, squareSize);
+              } 
+              
+              if(grid[y][x-1]===0){
+                fill(0,255,100,100);
+                rect((x-1)*squareSize, y*squareSize, squareSize, squareSize);
+              }   
+              
             }
+          }
+        }
+      }
+    }
+    if(placementItem==="repair"){
+      fill(255);
+      rect(400,50,700,height*0.1);
+      fill(0);
+      textSize(20);
+      text("Click anywhere on the raft to repair (+1 health)", 425, 75, 575, 100);
+      for(let x = 0;  x < NUM_COLS; x++){
+        for(let y = 0; y < NUM_ROWS; y++){
+          fill(0,100,255,100);
+          if(grid[y][x]===1){//at raft             
+            fill(0,255,100,100);
+            rect(x*squareSize, y*squareSize, squareSize, squareSize);
           }
         }
       }
@@ -268,8 +307,13 @@ function allOverlays(){
     //no longer in the menu
     dayandNight();
     materialsRender();
-    textSize(50);
+    cannonBall();
     fill(255);
+    textSize(20);
+    text("Press 1 To Enter The Build Menu", 70, height -150);
+    text("Plastic Count: " + plasticCount, width/2-75, height*0.85);
+    text("Wood Count: " + woodCount, width/2-75, height*0.83);
+    textSize(50);   
     text("DAY " + dayCount, width/2-75, height*0.9);
     textSize(10);
     for(let x = 0;  x < NUM_COLS; x++){
@@ -280,11 +324,12 @@ function allOverlays(){
       }
     }
     placementPhase=0;  
+    placementItem="";
   }
   fill("red");
   rect(playerPostionX-50, playerPostionY+30, 100,20);
   fill("green");
-  let takeOffGreen = map(0,0,healthCount,0,100);
+  let takeOffGreen = map(maxHealthCount-healthCount,0,maxHealthCount,0,100);
   rect(playerPostionX-50, playerPostionY+30, 100-takeOffGreen,20);
 }
 
@@ -321,11 +366,22 @@ function hookData(){
 
 function cannonBall(){
   for(let i = 0; i < objects.length; i++){
-    if(objects[i].objectHeight===0){
-      if(objects[i].x===playerPostionX){
-        fill(100);
-        circle(playerPostionX, objects[i].y,40);
+    if(objects[i].objectHeight===150){
+      if(objects[i].x+75===playerPostionX){
+        if(objects[i].y<height/2){
+          cannonBallObjects.push(new cannonBallNorth(playerPostionX, objects[i].y+225))
+        }
       }
+    }
+  }
+  for (let ball of cannonBallObjects){
+    ball.move();
+    ball.display();
+  }
+  for(let i = 1; i < cannonBallObjects-1; i++){
+    if(cannonBallObjects[i].y>=playerPostionY){
+      cannonBallObjects.splice(i,1);
+      healthCount -= 1;    
     }
   }
 }
@@ -430,6 +486,7 @@ class floatingBarrels extends allObjects{
     this.x += 1;
   }
   display(){
+    strokeWeight(1)
     fill(92,64,51);
     rect(this.x, this.y, this.objectWidth, this.objectHeight);
   }
@@ -470,6 +527,34 @@ class floatingPiratesSouth extends allObjects{
     rect(this.x+50, this.y-50, 50, 100);
     fill(255, 204, 153);
     circle(this.x+75, this.y+100, 45);
+  }
+}
+
+class cannonBallNorth extends allObjects{
+  constructor(x,y){
+    super(x,y);
+    this.objectDiameter = 40;
+  }
+  move(){
+    this.y += 4;
+  }
+  display(){
+    fill(100);
+    circle(this.x, this.y, this.objectDiameter);
+  }
+}
+
+class cannonBallSouth extends allObjects{
+  constructor(x,y){
+    super(x,y);
+    this.objectDiameter = 40;
+  }
+  move(){
+    this.y -= 4;
+  }
+  display(){
+    fill(100);
+    circle(this.x, this.y, this.objectDiameter);
   }
 }
 
