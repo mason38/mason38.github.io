@@ -20,11 +20,12 @@ let grid = [
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 ];
-
+let gameRunning=1;
 let NUM_ROWS = 18;
 let NUM_COLS = 32;
 let squareSize = 60;
 let raft;
+let gameOverScreen;
 let gridColoumn;
 let gridRow;
 let oneKey = false;
@@ -43,15 +44,17 @@ let start = Date.now();
 let oceanColors = [];
 let placementPhase = 0;//0-not placing   1-item selected   2-placement
 let placementItem = "";
-let dayCount = 1;
-let healthCount = 3;
+let dayCount = 0;
+let healthCount = 4;
 let maxHealthCount = 4;
 let cannonBallVelocity;
 let cannonBallObjects = [];
+let dayMult = 0;
 
 
 function preload(){
   raft = loadImage("assets/33770b1f8b51af8.png");
+  gameOverScreen = loadImage("assets/pixel-art-sign-skull-with-crossbones-and-game-over-vector-24924421.jpg");
 }
 
 function setup() {
@@ -72,6 +75,9 @@ function setup() {
 }
 
 function draw() {
+  if(gameRunning===2){
+    noLoop();
+  }
   gridColoumn = mouseGridX();
   gridRow = mouseGridY();
   // print(gridColoumn, gridRow);
@@ -83,6 +89,7 @@ function draw() {
   hookData();
   hookCollisions();
   line(playerPostionX,playerPostionY,hookPos.x, hookPos.y);
+  gameOver();
   
   
 }
@@ -99,11 +106,12 @@ function materialsRender(){
   if (frameCount % Math.floor(random(2000,4000)) === 0){
     objects.push(new floatingBarrels(0,random(0, height)));
   }
-  if (frameCount % Math.floor(random(200,400)) === 0){
+  
+  if (frameCount % Math.floor(random(0,1000000/dayCount)) === 0){
     objects.push(new floatingPiratesNorth(0,random(0, height*0.05)));
   }
-  if (frameCount % Math.floor(random(200,400)) === 0){
-    objects.push(new floatingPiratesSouth(0,random(height*0.85, height*0.85)));
+  if (frameCount % Math.floor(random(0,1000000/dayCount)) === 0){
+    objects.push(new floatingPiratesSouth(0,random(height*0.83, height*0.85)));
   }
   
   
@@ -369,7 +377,10 @@ function cannonBall(){
     if(objects[i].objectHeight===150){
       if(objects[i].x+75===playerPostionX){
         if(objects[i].y<height/2){
-          cannonBallObjects.push(new cannonBallNorth(playerPostionX, objects[i].y+225))
+          cannonBallObjects.push(new cannonBallNorth(playerPostionX, objects[i].y+225));
+        }
+        else{
+          cannonBallObjects.push(new cannonBallSouth(playerPostionX, objects[i].y-150));
         }
       }
     }
@@ -378,15 +389,21 @@ function cannonBall(){
     ball.move();
     ball.display();
   }
-  for(let i = 1; i < cannonBallObjects-1; i++){
-    if(cannonBallObjects[i].y>=playerPostionY){
-      cannonBallObjects.splice(i,1);
-      healthCount -= 1;    
+  for(let i = 0; i < cannonBallObjects.length; i++){
+    if(cannonBallObjects[i].num===1){
+      if(cannonBallObjects[i].y>=playerPostionY){
+        cannonBallObjects.splice(i,1);
+        healthCount -= 1;    
+      }
+    }
+    else{
+      if(cannonBallObjects[i].y<=playerPostionY){
+        cannonBallObjects.splice(i,1);
+        healthCount -= 1;    
+      }
     }
   }
 }
-
-
 
 function hookCollisions(){
 
@@ -416,25 +433,6 @@ function hookCollisions(){
     }
   }
 }
-
-function pirateNorth(){
-  fill(102, 51, 0);
-  rect(this.x, 200, 150, 150);
-  fill(51, 51, 51);
-  rect(250, 300, 50, 100);
-  fill(255, 204, 153);
-  circle(275, 260, 45);
-}
-
-function pirateSouth(){
-  fill(102, 51, 0);
-  rect(600, 200, 150, 150);
-  fill(51, 51, 51);
-  rect(650, 150, 50, 100);
-  fill(255, 204, 153);
-  circle(675, 280, 45);
-}
-
 
 class allObjects{
   constructor(x,y){
@@ -486,7 +484,7 @@ class floatingBarrels extends allObjects{
     this.x += 1;
   }
   display(){
-    strokeWeight(1)
+    strokeWeight(1);
     fill(92,64,51);
     rect(this.x, this.y, this.objectWidth, this.objectHeight);
   }
@@ -534,6 +532,7 @@ class cannonBallNorth extends allObjects{
   constructor(x,y){
     super(x,y);
     this.objectDiameter = 40;
+    this.num = 1;
   }
   move(){
     this.y += 4;
@@ -548,6 +547,7 @@ class cannonBallSouth extends allObjects{
   constructor(x,y){
     super(x,y);
     this.objectDiameter = 40;
+    this.num = 2;
   }
   move(){
     this.y -= 4;
@@ -558,3 +558,14 @@ class cannonBallSouth extends allObjects{
   }
 }
 
+function gameOver(){
+  if(healthCount===0){
+    textAlign(CENTER, CENTER);
+    image(gameOverScreen, 0, 0, width, height);
+    fill(255);
+    textSize(69);
+    text("DAYS SURVIVED:" + dayCount, width/2, height/2+height/4+height/7);
+    gameRunning+=1;
+
+  }
+}
